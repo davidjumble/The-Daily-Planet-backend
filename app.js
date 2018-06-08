@@ -10,9 +10,12 @@ mongoose.Promise = Promise;
 
 app.use(bodyParser.json());
 
-mongoose.connect(DB_URL).then(() => {
-  console.log(`Connected to the DB on ${DB_URL}...`);
-});
+mongoose
+  .connect(DB_URL)
+  .then(() => {
+    console.log(`Connected to the DB on ${DB_URL}...`);
+  })
+  .catch(console.log);
 
 app.use("/api", apiRouter);
 

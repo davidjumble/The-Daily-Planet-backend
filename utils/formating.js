@@ -36,5 +36,6 @@ module.exports = {
   formatArticles,
   createUserRef,
   createArticleRef,
-  formatCommentData
+  formatCommentData,
+  formatArticlesForClient
 };

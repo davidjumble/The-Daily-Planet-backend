@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
-const TOPIC = require("../models/topic.js");
-const USERS = require("../models/user.js");
-const ARTICLES = require("../models/article.js");
-const COMMENTS = require("../models/comment.js");
+const { Topic, Article, User, Comment } = require("../models/");
 const {
   formatArticles,
   createUserRef,
@@ -18,31 +15,36 @@ const seedDB = (topicData, userData, articleData, commentData) => {
     .dropDatabase()
     .then(() => {
       return Promise.all([
-        TOPIC.insertMany(topicData),
-        USERS.insertMany(userData)
+        Topic.insertMany(topicData),
+        User.insertMany(userData)
       ]);
     })
     .then(([topicDocs, userDocs]) => {
       const userIdLookUp = createUserRef(userDocs);
-      console.log(userIdLookUp);
+
       const formattedArticles = formatArticles(articleData, userIdLookUp);
 
-      return Promise.all([ARTICLES.insertMany(formattedArticles), userDocs]);
+      return Promise.all([
+        Article.insertMany(formattedArticles),
+        userDocs,
+        topicDocs
+      ]);
     })
-    .then(([articleDocs, userDocs]) => {
-      console.log(userDocs, articleDocs);
+    .then(([articleDocs, userDocs, topicDocs]) => {
       const userRefObj = createUserRef(userDocs);
-      console.log(userRefObj);
+
       const articleRefObj = createArticleRef(articleDocs);
-      console.log(articleRefObj);
+
       const formattedComments = formatCommentData(
         commentData,
         userRefObj,
         articleRefObj
       );
-      console.log(formattedComments);
 
-      // console.log(userRef);
+      const commentDocs = Comment.insertMany(formattedComments);
+      console.log("seeded ok ********");
+
+      return Promise.all([topicDocs, userDocs, articleDocs, commentDocs]);
     });
 };
 

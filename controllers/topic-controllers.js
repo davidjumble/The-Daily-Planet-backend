@@ -1,7 +1,9 @@
 const TOPICS = require("../models/Topic.js");
+const ARTICLES = require("../models/Article.js");
+const COMMENTS = require("../models/Comment.js");
+const { formatArticlesForClient } = require("../utils/formating.js");
 
 const getTopics = (req, res, next) => {
-  console.log("ellllo");
   TOPICS.find()
     .then(topics => {
       res.send({ topics });
@@ -10,7 +12,11 @@ const getTopics = (req, res, next) => {
 };
 
 const getArticlesByTopic = (req, res, next) => {
-  console.log("iiiiyaaaa");
+  const { topic_slug } = req.params;
+
+  ARTICLES.find({ belongs_to: topic_slug }).then(articles => {
+    res.send({ articles });
+  });
 };
 
 module.exports = { getTopics, getArticlesByTopic };
