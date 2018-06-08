@@ -1,3 +1,5 @@
+const { Comment } = require("../models");
+
 const formatArticles = (articleData, refObj) => {
   return articleData.map(articleDatum => {
     return {
@@ -37,5 +39,5 @@ module.exports = {
   createUserRef,
   createArticleRef,
   formatCommentData,
-  formatArticlesForClient
+  getArticlesWithComments
 };
