@@ -1,6 +1,8 @@
 const TOPICS = require("../models/Topic.js");
 const ARTICLES = require("../models/Article.js");
 const COMMENTS = require("../models/Comment.js");
+const USER = require("../models/User.js");
+const { createUserRef } = require("../utils/formating.js");
 
 const getTopics = (req, res, next) => {
   TOPICS.find()
@@ -25,8 +27,7 @@ const getArticlesByTopic = (req, res, next) => {
           articleObject
         ]).then(commentsAndArticlesArray => {
           [commentTotal, articleObject] = commentsAndArticlesArray;
-          console.log(commentTotal);
-          console.log(articleObject);
+
           return {
             ...articleObject._doc,
             comments: commentTotal
@@ -37,10 +38,31 @@ const getArticlesByTopic = (req, res, next) => {
       return Promise.all(articlesWithComments);
     })
     .then(articles => {
-      console.log(articlesWithComments);
       res.send({ articles });
     })
     .catch(console.log);
 };
 
-module.exports = { getTopics, getArticlesByTopic };
+const postArticle = (req, res, next) => {
+  console.log("you can do it");
+  const { topic_slug } = req.params;
+
+  const formattedArticle = {
+    votes: 0,
+    ...req.body,
+    belongs_to: topic_slug,
+
+    __v: 0
+  };
+
+  const newArticle = new ARTICLES(formattedArticle);
+
+  return newArticle
+    .save()
+    .then(Article => {
+      res.status(201).send({ Article });
+    })
+    .catch(console.log);
+};
+
+module.exports = { getTopics, getArticlesByTopic, postArticle };
