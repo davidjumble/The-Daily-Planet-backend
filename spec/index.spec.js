@@ -23,14 +23,24 @@ describe("/northcoders-news", () => {
     });
   });
   describe("/api", () => {
+    describe("/topics", () => {
+      it("GET responds with an array of topics", () => {
+        const testTopic = topicDocs[0].slug;
+        return request
+          .get(`/api/topics`)
+          .expect(200)
+          .then(res => {
+            expect(res.body.topics[0].slug).to.equal(testTopic);
+          });
+      });
+    });
+
     describe("/topics/:topic_slug/articles", () => {
-      it("GET responds with status 200 an an object with the articles", () => {
-        console.log(articleDocs[0].votes);
+      it("GET responds with status 200 and an object with the articles", () => {
         return request
           .get(`/api/topics/mitch/articles`)
           .expect(200)
           .then(res => {
-            console.log(articleDocs[0].votes);
             expect(res.body.articles[0]).to.contain.keys([
               "votes",
               "_id",
@@ -43,7 +53,16 @@ describe("/northcoders-news", () => {
           });
       });
 
-      //need to add correct mogo id's and topic then correct chai expects
+      it("GET responds with status 404 when given a vacant topic", () => {
+        return request
+          .get(`/api/topics/ennui/articles`)
+          .expect(404)
+          .then(res => {
+            console.log(articleDocs[0].votes);
+            expect(res.body.message).to.equal(`Sorry, no Articles about ennui`);
+          });
+      });
+
       it("POST puts a new article into the database", () => {
         return request
           .post("/api/topics/mitch/articles")
@@ -65,22 +84,66 @@ describe("/northcoders-news", () => {
             );
           });
       });
+
+      it("POST responds with a 400 for an empty gesture", () => {
+        return request
+          .post("/api/topics/mitch/articles")
+          .send({})
+          .expect(400)
+          .then(res => {
+            expect(res.body.message).to.equal(
+              "articles validation failed: created_by: Path `created_by` is required., title: Path `title` is required."
+            );
+          });
+      });
     });
 
-    describe("/articles/:article_id", () => {
+    describe("/articles", () => {
+      it("GET responds with an array of articles", () => {
+        const testTitle = articleDocs[0].title;
+        return request
+          .get(`/api/articles`)
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles[0].title).to.equal(testTitle);
+          });
+      });
+    });
+
+    describe("/articles/article_id", () => {
+      it("GET responds with status 200 and the specific article", () => {
+        return request
+          .get(`/api/articles/${articleDocs[0]._id}`)
+          .expect(200)
+          .then(res => {
+            expect(res.body.article[0].title).to.equal(articleDocs[0].title);
+          });
+      });
+
+      it("GET responds with status 400 when given an invalid mongo id", () => {
+        return request
+          .get(`/api/articles/808`)
+          .expect(400)
+          .then(res => {
+            console.log(articleDocs[0].votes);
+            console.log(res.body.message);
+            expect(res.body.message).to.equal("Bad request : Invalid ObjectId");
+          });
+      });
+
       it("PUT increments the vote count of the corresponding article", () => {
         const originalVoteCount = articleDocs[0].votes;
-        console.log(articleDocs);
+
         return request
           .put(`/api/articles/${articleDocs[0]._id}?vote=up`)
           .expect(201)
           .then(res => {
-            console.log(res.body);
             expect(res.body.article.votes).to.equal(originalVoteCount + 1);
           });
       });
     });
   });
+
   after(() => {
     mongoose.disconnect();
   });

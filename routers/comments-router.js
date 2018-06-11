@@ -1,6 +1,12 @@
 const commentsRouter = require("express").Router();
-const { pollingStation } = require("../controllers/comment-controllers");
+const {
+  pollingStation,
+  deleteComment
+} = require("../controllers/comment-controllers");
 
-commentsRouter.route("/:comment_id").put(pollingStation);
+commentsRouter
+  .route("/:comment_id")
+  .put(pollingStation)
+  .delete(deleteComment);
 
 module.exports = commentsRouter;

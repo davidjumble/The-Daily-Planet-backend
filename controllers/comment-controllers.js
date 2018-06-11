@@ -30,6 +30,9 @@ const pollingStation = (req, res, next) => {
   }
 };
 
+const deleteComment = (req, res, next) => {};
+
 module.exports = {
-  pollingStation
+  pollingStation,
+  deleteComment
 };

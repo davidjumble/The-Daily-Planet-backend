@@ -58,7 +58,7 @@ const getArticleById = (req, res, next) => {
     .then(article => {
       res.send({ article });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 const getCommentsForArticle = (req, res, next) => {

@@ -19,4 +19,18 @@ mongoose
 
 app.use("/api", apiRouter);
 
+app.use((err, req, res, next) => {
+  console.log("sadness");
+  console.log(err.message);
+  if (err.status) {
+    res.status(404).send({ message: err.message });
+  }
+
+  if (err.name === "CastError")
+    res.status(400).send({ message: `Bad request : Invalid ${err.kind}` });
+  else if (err.name === "ValidationError")
+    res.status(400).send({ message: err.message });
+  else next(err);
+});
+
 module.exports = app;

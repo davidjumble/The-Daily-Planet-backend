@@ -38,9 +38,15 @@ const getArticlesByTopic = (req, res, next) => {
       return Promise.all(articlesWithComments);
     })
     .then(articles => {
+      console.log(articles);
+      if (articles.length === 0)
+        return next({
+          status: 404,
+          message: `Sorry, no Articles about ${topic_slug}`
+        });
       res.send({ articles });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 const postArticle = (req, res, next) => {
@@ -62,7 +68,7 @@ const postArticle = (req, res, next) => {
     .then(Article => {
       res.status(201).send({ Article });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 module.exports = { getTopics, getArticlesByTopic, postArticle };
