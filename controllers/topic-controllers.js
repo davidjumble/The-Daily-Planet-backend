@@ -38,7 +38,6 @@ const getArticlesByTopic = (req, res, next) => {
       return Promise.all(articlesWithComments);
     })
     .then(articles => {
-      console.log(articles);
       if (articles.length === 0)
         return next({
           status: 404,
@@ -50,7 +49,6 @@ const getArticlesByTopic = (req, res, next) => {
 };
 
 const postArticle = (req, res, next) => {
-  console.log("you can do it");
   const { topic_slug } = req.params;
 
   const formattedArticle = {

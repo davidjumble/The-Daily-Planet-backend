@@ -17,5 +17,24 @@ const Articles = { votes: 0,
     belongs_to: 5b198c233b74380310517251,
     created_by: 5b198c233b7438031051723b,
     __v: 0 }
+
+
+    article isDs  
+
+
+
+
+    5b23889e7be18108e4a583b5,
+
+
+    comment id's
+
+    5b23889e7be18108e4a583bb,
+
+    5b23889e7be18108e4a58391,
+
+
+
+
   
 

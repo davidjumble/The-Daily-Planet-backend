@@ -20,8 +20,7 @@ mongoose
 app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
-  console.log("sadness");
-  console.log(err.message);
+  console.log("I have indentified the source of woes behold...", err.message);
   if (err.status) {
     res.status(404).send({ message: err.message });
   }

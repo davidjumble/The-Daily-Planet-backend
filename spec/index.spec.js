@@ -22,6 +22,9 @@ describe("/northcoders-news", () => {
       [topicDocs, userDocs, articleDocs, commentDocs] = docs;
     });
   });
+
+  //Topic tests
+
   describe("/api", () => {
     describe("/topics", () => {
       it("GET responds with an array of topics", () => {
@@ -58,7 +61,6 @@ describe("/northcoders-news", () => {
           .get(`/api/topics/ennui/articles`)
           .expect(404)
           .then(res => {
-            console.log(articleDocs[0].votes);
             expect(res.body.message).to.equal(`Sorry, no Articles about ennui`);
           });
       });
@@ -98,6 +100,8 @@ describe("/northcoders-news", () => {
       });
     });
 
+    //article tests
+
     describe("/articles", () => {
       it("GET responds with an array of articles", () => {
         const testTitle = articleDocs[0].title;
@@ -125,8 +129,6 @@ describe("/northcoders-news", () => {
           .get(`/api/articles/808`)
           .expect(400)
           .then(res => {
-            console.log(articleDocs[0].votes);
-            console.log(res.body.message);
             expect(res.body.message).to.equal("Bad request : Invalid ObjectId");
           });
       });
@@ -139,6 +141,55 @@ describe("/northcoders-news", () => {
           .expect(201)
           .then(res => {
             expect(res.body.article.votes).to.equal(originalVoteCount + 1);
+          });
+      });
+    });
+
+    //comment tests
+
+    describe("/comments/comment_id", () => {
+      it("PUT increments the vote count of the corresponding comment", () => {
+        const originalVoteCount = commentDocs[0].votes;
+
+        return request
+          .put(`/api/comments/${commentDocs[0]._id}?vote=up`)
+          .expect(201)
+          .then(res => {
+            expect(res.body.comment.votes).to.equal(originalVoteCount + 1);
+          });
+      });
+
+      it("PUT responds with 404 for an invalid mongo id", () => {
+        const originalVoteCount = commentDocs[0].votes;
+
+        return request
+          .put(`/api/comments/401?vote=up`)
+          .expect(404)
+          .then(res => {
+            expect(res.body.message).to.equal("comment not found: no such id");
+          });
+      });
+    });
+
+    it("DELETE removes a comment", () => {
+      const deletedId = commentDocs[0]._id;
+      return request
+        .del(`/api/comments/${commentDocs[0]._id}`)
+        .expect(202)
+        .then(res => {
+          expect(res.body.message).to.equal(`${deletedId} Comment deleted`);
+        });
+    });
+
+    //user tests
+
+    describe("/users/user_id", () => {
+      it("GET responds with status 200 and the specific user", () => {
+        return request
+          .get(`/api/users/${userDocs[0]._id}`)
+          .expect(200)
+          .then(res => {
+            expect(res.body.user.name).to.equal(userDocs[0].name);
           });
       });
     });

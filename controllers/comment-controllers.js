@@ -1,38 +1,48 @@
 const COMMENT = require("../models/Comment.js");
 
-const pollingStation = (req, res, next) => {
+const commentPollingStation = (req, res, next) => {
   const { comment_id } = req.params;
 
-  console.log(req.query);
-
   const { vote } = req.query;
-
-  console.log(vote);
-
-  //Is there a better way to do this than two condtionals, letya boy know
+  let voteIncrement;
 
   if (vote === "up") {
-    COMMENT.findById(comment_id, (err, comment) => {
-      const upVoteCount = comment.votes + 1;
-
-      comment.votes = upVoteCount;
-      comment.save().then(comment => res.send(comment));
-    });
+    voteIncrement = 1;
   }
-
   if (vote === "down") {
-    COMMENT.findById(comment_id, (err, comment) => {
-      const downVoteCount = comment.votes - 1;
-
-      comment.votes = downVoteCount;
-      comment.save().then(comment => res.send(comment));
-    });
+    voteIncrement = -1;
   }
+
+  COMMENT.findById(comment_id, (err, comment) => {
+    if (comment === undefined) {
+      return next({
+        status: 404,
+        message: "comment not found: no such id"
+      });
+    }
+    const VoteCount = comment.votes + voteIncrement;
+
+    comment.votes = VoteCount;
+    comment.save().then(comment => res.status(201).send({ comment }));
+  });
 };
 
-const deleteComment = (req, res, next) => {};
+const deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  COMMENT.findByIdAndRemove(comment_id)
+    .then(comment => {
+      if (comment === undefined) {
+        return next({
+          status: 404,
+          message: "comment not found: no such id"
+        });
+      }
+      res.status(202).send({ message: `${comment_id} Comment deleted` });
+    })
+    .catch(next);
+};
 
 module.exports = {
-  pollingStation,
+  commentPollingStation,
   deleteComment
 };

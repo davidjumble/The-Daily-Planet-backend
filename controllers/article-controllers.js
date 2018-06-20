@@ -2,8 +2,6 @@ const ARTICLES = require("../models/Article.js");
 const COMMENTS = require("../models/Comment.js");
 
 const getArticles = (req, res, next) => {
-  console.log("yes...,  finally, salvation");
-
   ARTICLES.find()
     .then(articles => {
       const articlesWithComments = articles.map(articleObject => {
@@ -25,14 +23,12 @@ const getArticles = (req, res, next) => {
       return Promise.all(articlesWithComments);
     })
     .then(articles => {
-      console.log(articles);
       res.send({ articles });
     })
     .catch(console.log);
 };
 
 const getArticleById = (req, res, next) => {
-  console.log("float like a leaf on the river of life");
   const { article_id } = req.params;
 
   ARTICLES.find({ _id: article_id })
@@ -62,8 +58,6 @@ const getArticleById = (req, res, next) => {
 };
 
 const getCommentsForArticle = (req, res, next) => {
-  console.log("cooooooo  eeeeeeeeeee");
-
   const { article_id } = req.params;
 
   COMMENTS.find({ belongs_to: article_id }).then(comments =>
@@ -73,7 +67,7 @@ const getCommentsForArticle = (req, res, next) => {
 
 const tellMeHowYouReallyFeel = (req, res, next) => {
   //posts a comment to an article
-  console.log("you can do it");
+
   const { article_id } = req.params;
 
   const formattedComment = {
@@ -91,7 +85,6 @@ const tellMeHowYouReallyFeel = (req, res, next) => {
   return newComment
     .save()
     .then(Comment => {
-      console.log(Comment);
       res.status(201).send({ Comment });
     })
     .catch(console.log);
@@ -99,27 +92,31 @@ const tellMeHowYouReallyFeel = (req, res, next) => {
 
 const articlePollingStation = (req, res, next) => {
   const { article_id } = req.params;
-  console.log(article_id);
 
   const { vote } = req.query;
 
+  let voteIncrement;
+
   if (vote === "up") {
-    ARTICLES.findById(article_id, (err, article) => {
-      const upVoteCount = article.votes + 1;
-
-      article.votes = upVoteCount;
-      article.save().then(article => res.status(201).send({ article }));
-    });
+    voteIncrement = 1;
   }
-
   if (vote === "down") {
-    ARTICLES.findById(article_id, (err, article) => {
-      const downVoteCount = article.votes - 1;
-
-      article.votes = downVoteCount;
-      article.save().then(article => res.status(201).send({ article }));
-    });
+    voteIncrement = -1;
   }
+
+  ARTICLES.findById(article_id, (err, article) => {
+    if (article === undefined) {
+      return next({
+        status: 404,
+        message: "article not found: no such id"
+      });
+    }
+
+    const upVoteCount = article.votes + voteIncrement;
+
+    article.votes = upVoteCount;
+    article.save().then(article => res.status(201).send({ article }));
+  });
 };
 
 module.exports = {
