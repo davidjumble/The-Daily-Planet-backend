@@ -24,7 +24,7 @@ const commentPollingStation = (req, res, next) => {
 
     comment.votes = VoteCount;
     comment.save().then(comment => res.status(201).send({ comment }));
-  });
+  }).catch(next);
 };
 
 const deleteComment = (req, res, next) => {

@@ -9,7 +9,7 @@ const getTopics = (req, res, next) => {
     .then(topics => {
       res.send({ topics });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 const getArticlesByTopic = (req, res, next) => {

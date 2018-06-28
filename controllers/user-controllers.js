@@ -7,7 +7,7 @@ const getUsers = (req, res, next) => {
     .then(user => {
       res.send({ user });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 module.exports = {

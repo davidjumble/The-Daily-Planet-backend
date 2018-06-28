@@ -25,7 +25,7 @@ const getArticles = (req, res, next) => {
     .then(articles => {
       res.send({ articles });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 const getArticleById = (req, res, next) => {
@@ -60,9 +60,9 @@ const getArticleById = (req, res, next) => {
 const getCommentsForArticle = (req, res, next) => {
   const { article_id } = req.params;
 
-  COMMENTS.find({ belongs_to: article_id }).then(comments =>
-    res.send({ comments })
-  );
+  COMMENTS.find({ belongs_to: article_id })
+    .then(comments => res.send({ comments }))
+    .catch(next);
 };
 
 const tellMeHowYouReallyFeel = (req, res, next) => {
@@ -116,7 +116,7 @@ const articlePollingStation = (req, res, next) => {
 
     article.votes = upVoteCount;
     article.save().then(article => res.status(201).send({ article }));
-  });
+  }).catch(next);
 };
 
 module.exports = {
