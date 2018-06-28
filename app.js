@@ -8,8 +8,8 @@ const DB_URL = process.env.DB_URL || require("./config");
 
 mongoose.Promise = Promise;
 
-app.use(bodyParser.json());
 app.use(cors());
+app.use(bodyParser.json());
 
 mongoose
   .connect(DB_URL)
