@@ -52,7 +52,7 @@ const getArticleById = (req, res, next) => {
       return Promise.all(articlesWithComments);
     })
     .then(article => {
-      res.json({ article });
+      res.send({ article });
     })
     .catch(next);
 };
@@ -87,7 +87,7 @@ const tellMeHowYouReallyFeel = (req, res, next) => {
     .then(Comment => {
       res.status(201).send({ Comment });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 const articlePollingStation = (req, res, next) => {
