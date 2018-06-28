@@ -52,7 +52,7 @@ const getArticleById = (req, res, next) => {
       return Promise.all(articlesWithComments);
     })
     .then(article => {
-      res.send({ article });
+      res.json({ article });
     })
     .catch(next);
 };
