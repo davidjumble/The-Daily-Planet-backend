@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 mongoose
   .connect(DB_URL)
   .then(() => {
-    console.log(`Connected to the DB on ${DB_URL}...`);
+    console.log(`Connected to the great DB on ${DB_URL}...`);
   })
   .catch(console.log);
 
